@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../README.md" Pack="true" PackagePath="\"/>
+        <None Include="../LICENSE" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <!-- https://dev.to/j_sakamoto/writing-a-nuget-package-release-notes-in-an-outside-of-a-csproj-file-3f94 -->
+    <Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
+        <ReadLinesFromFile File="CHANGELOG.md">
+            <Output TaskParameter="Lines" ItemName="ReleaseNoteLines" />
+        </ReadLinesFromFile>
+        <PropertyGroup>
+            <PackageReleaseNotes>@(ReleaseNoteLines, '%0a')</PackageReleaseNotes>
+        </PropertyGroup>
+    </Target>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SignedUrl.Abstractions\SignedUrl.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
