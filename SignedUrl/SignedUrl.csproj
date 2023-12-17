@@ -27,6 +27,12 @@
         </PropertyGroup>
     </Target>
 
+    <PropertyGroup Condition="$(Configuration) == 'Release'">
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\SignedUrl.Abstractions\SignedUrl.Abstractions.csproj" />
     </ItemGroup>
