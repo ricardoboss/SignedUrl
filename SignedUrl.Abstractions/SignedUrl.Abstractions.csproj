@@ -29,7 +29,5 @@
 
     <PropertyGroup Condition="$(Configuration) == 'Release'">
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 </Project>
