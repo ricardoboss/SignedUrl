@@ -6,7 +6,7 @@ A NuGet package that generates signed query strings.
 
 ## Usage
 
-> Currently, only ASP.NET projects are supported. If you can't use, you need to implement `ISignatureProtector`
+> Currently, only ASP.NET projects are supported. If you can't use it, you need to implement `ISignatureProtector`
 > yourself.  
 > The implementation MUST NOT return the bytes as is, as this would make your signature prone to brute force attacks.
 
