@@ -19,6 +19,7 @@ public interface IQuerySigner
     /// <returns>
     /// A fully qualified URL for the given query and query parameters including a digest signature.
     /// </returns>
+    /// <throws cref="SignatureGenerationException">If the signature could not be generated.</throws>
     string GenerateSignature(IDictionary<string, string?>? queryParams = null, string signatureKey = DefaultSignatureKey);
 
     /// <summary>

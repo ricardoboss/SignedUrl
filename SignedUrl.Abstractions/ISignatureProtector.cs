@@ -15,6 +15,7 @@ public interface ISignatureProtector
     /// </summary>
     /// <param name="data">The data to protect.</param>
     /// <returns>The protected data.</returns>
+    /// <throws><see cref="ProtectorException"/> if the data could not be protected.</throws>
     public byte[] Protect(byte[] data);
 
     /// <summary>
@@ -24,5 +25,6 @@ public interface ISignatureProtector
     /// </summary>
     /// <param name="data">The data to unprotect.</param>
     /// <returns>The unprotected data.</returns>
+    /// <throws><see cref="ProtectorException"/> if the data could not be unprotected.</throws>
     public byte[] Unprotect(byte[] data);
 }

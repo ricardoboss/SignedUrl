@@ -33,11 +33,19 @@ public class DigestQuerySigner(ISignatureProtector signatureProtector) : IQueryS
 
 		var queryStringBytes = Encoding.UTF8.GetBytes(queryString);
 		var digestBytes = SHA256.HashData(queryStringBytes);
-		var securedQueryStringBytes = signatureProtector.Protect(digestBytes);
-		var digestString = Convert.ToBase64String(securedQueryStringBytes);
-		queryCollection[signatureKey] = digestString;
 
-		return queryCollection.ToString() ?? throw new InvalidOperationException();
+		try
+		{
+			var securedQueryStringBytes = signatureProtector.Protect(digestBytes);
+			var digestString = Convert.ToBase64String(securedQueryStringBytes);
+			queryCollection[signatureKey] = digestString;
+
+			return queryCollection.ToString() ?? throw new InvalidOperationException();
+		}
+		catch (ProtectorException e)
+		{
+			throw new SignatureGenerationException("Failed to generate signature.", e);
+		}
 	}
 
 	/// <inheritdoc />
@@ -57,9 +65,16 @@ public class DigestQuerySigner(ISignatureProtector signatureProtector) : IQueryS
 		var actualQueryStringBytes = Encoding.UTF8.GetBytes(actualQueryString);
 		var actualDigestBytes = SHA256.HashData(actualQueryStringBytes);
 
-		var givenSecuredDigestBytes = Convert.FromBase64String(digestString);
-		var givenDigestBytes = signatureProtector.Unprotect(givenSecuredDigestBytes);
+		try
+		{
+			var givenSecuredDigestBytes = Convert.FromBase64String(digestString);
+			var givenDigestBytes = signatureProtector.Unprotect(givenSecuredDigestBytes);
 
-		return actualDigestBytes.SequenceEqual(givenDigestBytes);
+			return actualDigestBytes.SequenceEqual(givenDigestBytes);
+		}
+		catch (Exception e) when (e is ProtectorException or FormatException)
+		{
+			return false;
+		}
 	}
 }
