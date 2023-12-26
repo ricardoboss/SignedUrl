@@ -1,5 +1,3 @@
-using SignedUrl.Abstractions;
-
 namespace SignedUrl.Tests;
 
 public class DigestSignatureGeneratorTests
@@ -8,22 +6,10 @@ public class DigestSignatureGeneratorTests
     [ClassData(typeof(GenerateSignatureDataProvider))]
     public void GenerateSignatureTest(Dictionary<string, string?> data, string expected)
     {
-        var protector = MockProtector();
-        var generator = new DigestSignatureGenerator(protector.Object);
+        var generator = new DigestSignatureGenerator();
         var actual = generator.GenerateSignature(data);
 
-        Assert.Equal(expected, actual);
-    }
-
-    private static Mock<ISignatureProtector> MockProtector()
-    {
-        var protectorMock = new Mock<ISignatureProtector>();
-
-        protectorMock
-            .Setup(p => p.Protect(It.IsAny<byte[]>()))
-            .Returns((byte[] bytes) => bytes);
-
-        return protectorMock;
+        Assert.Equal(expected, Convert.ToBase64String(actual));
     }
 
     private sealed class GenerateSignatureDataProvider : TheoryData<Dictionary<string, string?>, string>

@@ -11,11 +11,13 @@ public class QueryStringUrlSignerTests
     public void TestSign(string url, string expected)
     {
         var generator = MockGenerator();
-        var signer = new QueryStringUrlSigner(generator.Object);
+        var protector = MockProtector(protect: true);
+        var signer = new QueryStringUrlSigner(generator.Object, protector.Object);
         var actual = signer.Sign(url);
 
         Assert.Equal(expected, actual);
         generator.VerifyAll();
+        protector.VerifyAll();
     }
 
     private sealed class SignDataProvider : TheoryData<string, string>
@@ -33,7 +35,8 @@ public class QueryStringUrlSignerTests
     public void TestValidate(string url, bool expected)
     {
         var generator = MockGenerator();
-        var signer = new QueryStringUrlSigner(generator.Object);
+        var protector = MockProtector(unprotect: true);
+        var signer = new QueryStringUrlSigner(generator.Object, protector.Object);
         var actual = signer.Validate(url);
 
         Assert.Equal(expected, actual);
@@ -76,10 +79,30 @@ public class QueryStringUrlSignerTests
 
                 var queryString = builder.ToString();
                 var queryStringBytes = Encoding.UTF8.GetBytes(queryString);
-                var hashBytes = SHA256.HashData(queryStringBytes);
-                return Convert.ToBase64String(hashBytes);
+                return SHA256.HashData(queryStringBytes);
             });
 
         return generatorMock;
+    }
+
+    private static Mock<ISignatureProtector> MockProtector(bool protect = false, bool unprotect = false)
+    {
+        var protectorMock = new Mock<ISignatureProtector>();
+
+        if (protect)
+        {
+            protectorMock
+                .Setup(p => p.Protect(It.IsAny<byte[]>()))
+                .Returns((byte[] data) => data);
+        }
+
+        if (unprotect)
+        {
+            protectorMock
+                .Setup(p => p.Unprotect(It.IsAny<byte[]>()))
+                .Returns((byte[] data) => data);
+        }
+
+        return protectorMock;
     }
 }

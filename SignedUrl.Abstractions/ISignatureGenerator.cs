@@ -10,5 +10,5 @@ public interface ISignatureGenerator
     /// </summary>
     /// <param name="data">The parameters to generate a signature for.</param>
     /// <returns>The generated signature.</returns>
-    string GenerateSignature(IDictionary<string, string?> data);
+    byte[] GenerateSignature(IDictionary<string, string?> data);
 }

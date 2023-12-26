@@ -31,8 +31,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IUrlSigner, QueryStringUrlSigner>(sp =>
         {
             var generator = sp.GetRequiredService<ISignatureGenerator>();
+            var protector = sp.GetRequiredService<ISignatureProtector>();
 
-            return new(generator, queryKeyProvider?.Invoke() ?? "s");
+            return new(generator, protector, queryKeyProvider?.Invoke() ?? "s");
         });
 
         return services;

@@ -3,7 +3,7 @@ using SignedUrl.Abstractions;
 
 namespace SignedUrl;
 
-public class QueryStringUrlSigner(ISignatureGenerator generator, string queryKey = "s") : IUrlSigner
+public class QueryStringUrlSigner(ISignatureGenerator generator, ISignatureProtector protector, string queryKey = "s") : IUrlSigner
 {
     /// <inheritdoc />
     public string Sign(string url)
@@ -13,8 +13,9 @@ public class QueryStringUrlSigner(ISignatureGenerator generator, string queryKey
 
         var queryDictionary = queryCollection.Keys.Cast<string>().ToDictionary(key => key, key => queryCollection[key]);
         var signature = generator.GenerateSignature(queryDictionary);
+        var protectedSignature = protector.Protect(signature);
 
-        queryCollection[queryKey] = signature;
+        queryCollection[queryKey] = Convert.ToBase64String(protectedSignature);
 
         builder.Query = queryCollection.ToString() ?? throw new InvalidOperationException();
 
@@ -26,8 +27,9 @@ public class QueryStringUrlSigner(ISignatureGenerator generator, string queryKey
     {
         var builder = new UriBuilder(url);
         var queryCollection = HttpUtility.ParseQueryString(builder.Query);
-        var signature = queryCollection[queryKey];
-        if (string.IsNullOrWhiteSpace(signature))
+
+        var signatureString = queryCollection[queryKey];
+        if (string.IsNullOrWhiteSpace(signatureString))
             return false;
 
         queryCollection.Remove(queryKey);
@@ -35,6 +37,9 @@ public class QueryStringUrlSigner(ISignatureGenerator generator, string queryKey
         var queryDictionary = queryCollection.Keys.Cast<string>().ToDictionary(key => key, key => queryCollection[key]);
         var expectedSignature = generator.GenerateSignature(queryDictionary);
 
-        return string.Equals(expectedSignature, signature, StringComparison.Ordinal);
+        var actualProtectedSignature = Convert.FromBase64String(signatureString);
+        var actualSignature = protector.Unprotect(actualProtectedSignature);
+
+        return expectedSignature.SequenceEqual(actualSignature);
     }
 }
