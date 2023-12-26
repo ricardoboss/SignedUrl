@@ -1,3 +1,9 @@
+1.2.0
+-----
+
+* Handle cases where `ISignatureProtector` generates time-dependent outputs
+* The `ISignatureGenerator` does no longer need to protect the generated signature itself
+
 1.1.0
 -----
 

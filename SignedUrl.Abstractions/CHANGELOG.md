@@ -1,3 +1,8 @@
+1.2.0
+-----
+
+* The `ISignatureGenerator` does no longer need to protect the generated signature itself
+  
 1.1.0
 -----
 
