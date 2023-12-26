@@ -9,11 +9,34 @@ namespace SignedUrl.AspNet;
 /// <param name="dataProtectionProvider">The <see cref="IDataProtectionProvider"/> to use.</param>
 public class DataProtectionSignatureProtector(IDataProtectionProvider dataProtectionProvider) : ISignatureProtector
 {
-    private IDataProtector Protector => dataProtectionProvider.CreateProtector(nameof(DataProtectionSignatureProtector));
+    private readonly Lazy<IDataProtector> lazyProtector =
+        new(() => dataProtectionProvider.CreateProtector(nameof(DataProtectionSignatureProtector)));
+
+    private IDataProtector Protector => lazyProtector.Value;
 
     /// <inheritdoc />
-    public byte[] Protect(byte[] data) => Protector.Protect(data);
+    public byte[] Protect(byte[] data)
+    {
+        try
+        {
+            return Protector.Protect(data);
+        }
+        catch (Exception e)
+        {
+            throw new ProtectorException("Failed to protect data.", e);
+        }
+    }
 
     /// <inheritdoc />
-    public byte[] Unprotect(byte[] data) => Protector.Unprotect(data);
+    public byte[] Unprotect(byte[] data)
+    {
+        try
+        {
+            return Protector.Unprotect(data);
+        }
+        catch (Exception e)
+        {
+            throw new ProtectorException("Failed to unprotect data.", e);
+        }
+    }
 }
