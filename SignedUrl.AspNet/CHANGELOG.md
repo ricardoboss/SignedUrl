@@ -1,3 +1,8 @@
+1.1.0
+-----
+
+* Removed `QuerySignerExtensions` class
+
 1.0.2
 -----
 

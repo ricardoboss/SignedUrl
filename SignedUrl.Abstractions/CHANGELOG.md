@@ -1,3 +1,11 @@
+1.1.0
+-----
+
+* Renamed `IQuerySigner` to `IUrlSigner`
+* Renamed `GenerateSignature` to `Sign`
+* Renamed `ValidateSignature` to `Validate`
+* Removed `ISignatureProtector.Unprotect`
+
 1.0.2
 -----
 

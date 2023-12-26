@@ -1,3 +1,8 @@
+1.1.0
+-----
+
+* Split `DigestQuerySigner` into `DigestSignatureGenerator` and `QueryStringUrlSigner`
+
 1.0.2
 -----
 
